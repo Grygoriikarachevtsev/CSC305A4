@@ -134,8 +134,8 @@ void setup_scene()
     light_colors.emplace_back(16, 16, 16, 0);
 
     //Spheres
-    // sphere_centers.emplace_back(1, 0.2, -1);
-    // sphere_radii.emplace_back(1);
+    sphere_centers.emplace_back(1, 0.2, -1);
+    sphere_radii.emplace_back(1);
 
     //parallelograms
     parallelograms.emplace_back();
@@ -524,7 +524,7 @@ bool is_light_visible(const Vector3d &ray_origin, const Vector3d &ray_direction,
 }
 
 
-Vector4d shoot_ray(const Vector3d &ray_origin, const Vector3d &ray_direction)
+Vector4d shoot_ray(const Vector3d &ray_origin, const Vector3d &ray_direction, int max_bounce)
 {
     //Intersection point and normal, these are output of find_nearest_object
     Vector3d p, N;
@@ -570,8 +570,22 @@ Vector4d shoot_ray(const Vector3d &ray_origin, const Vector3d &ray_direction)
         lights_color += (diffuse + specular).cwiseProduct(light_color) / D.squaredNorm();
     }
 
+    Vector4d reflection_color = Vector4d::Zero();
+
+    if(max_bounce > 0) {
+
+        Vector3d reflected_direction = (ray_direction - 2.0 * ray_direction.dot(N) * N).normalized();
+
+        const double bias = 1e-4;
+        double side = reflected_direction.dot(N) >= 0.0 ? 1.0 : -1.0;
+        Vector3d reflected_origin = p + side * bias * N;
+
+        Vector4d seen_color = shoot_ray(reflected_origin, reflected_direction, max_bounce - 1);
+        reflection_color = obj_reflection_color.cwiseProduct(seen_color);
+    }
+
     // Rendering equation
-    Vector4d C = ambient_color + lights_color;
+    Vector4d C = ambient_color + lights_color + reflection_color;
 
     //Set alpha to 1
     C(3) = 1;
@@ -628,7 +642,7 @@ void raytrace_scene()
                 ray_direction = Vector3d(0, 0, -1);
             }
 
-            const Vector4d C = shoot_ray(ray_origin, ray_direction);
+            const Vector4d C = shoot_ray(ray_origin, ray_direction, 5);
             R(i, j) = C(0);
             G(i, j) = C(1);
             B(i, j) = C(2);
