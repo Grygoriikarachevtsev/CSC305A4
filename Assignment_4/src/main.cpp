@@ -245,7 +245,7 @@ int AABBTree::build_recursive(const MatrixXd &V, const MatrixXi &F, const Matrix
     const int node_index = static_cast<int>(nodes.size());
     nodes.push_back(internal);
 
-    const int mid = from + (to - from + 1) / 2;
+    const int mid = from + (to - from + 1) / 2; // divides the range
 
     const int left_index = build_recursive(V, F, centroids, from, mid, node_index, triangles);
     const int right_index = build_recursive(V, F, centroids, mid, to, node_index, triangles);
