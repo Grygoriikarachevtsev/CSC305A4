@@ -1,0 +1,3 @@
+C:/Users/grego/Documents/uvic/CSC305/CG-Fall-2026/build-mingw/CMakeFiles/assignment4.dir
+C:/Users/grego/Documents/uvic/CSC305/CG-Fall-2026/build-mingw/CMakeFiles/edit_cache.dir
+C:/Users/grego/Documents/uvic/CSC305/CG-Fall-2026/build-mingw/CMakeFiles/rebuild_cache.dir
